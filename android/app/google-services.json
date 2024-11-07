@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "614788465962",
+    "firebase_url": "https://cinescore-6e4b9-default-rtdb.firebaseio.com",
+    "project_id": "cinescore-6e4b9",
+    "storage_bucket": "cinescore-6e4b9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:614788465962:android:18e38a03afe153834cca53",
+        "android_client_info": {
+          "package_name": "com.infnet.cinescore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGROyJ_hrgaXNngF70T9Bv1tIei4thUeA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
