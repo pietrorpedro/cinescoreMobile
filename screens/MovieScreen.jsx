@@ -70,9 +70,23 @@ export default function MovieScreen({ route }) {
 
     async function handleSubmit() {
         if (validateInputs()) {
-
             console.log("Crítica e nota válidas, enviando...");
             await sendMovieReview(id, user, reviewInput, ratingInput);
+
+            // Criar a nova crítica para adicionar ao estado sem recarregar
+            const newReview = {
+                review: reviewInput,
+                rating: ratingInput,
+                username: user.username, // ou o nome correto do usuário
+                createdAt: new Date(), // data da crítica
+            };
+
+            // Atualiza a lista de críticas com a nova
+            setReviews(prevReviews => [...prevReviews, newReview]);
+
+            // Limpar os campos de entrada
+            setReviewInput("");
+            setRatingInput("");
         }
     }
 
@@ -138,9 +152,9 @@ export default function MovieScreen({ route }) {
                                     <View>
                                         <Text variant="bodySmall">{review.username}</Text>
                                         <Text variant="bodySmall">
-                                            {review.createdAt.toDate().toLocaleDateString("pt-BR", {
+                                            {new Date(review.createdAt).toLocaleDateString("pt-BR", {
                                                 year: "numeric",
-                                                month: "long",
+                                                month: "numeric",
                                                 day: "numeric",
                                             })}
                                         </Text>
