@@ -1,15 +1,13 @@
+import { useNavigation } from "@react-navigation/native";
 import { Dimensions, Image, Pressable, StyleSheet } from "react-native";
 import { Card, Text } from "react-native-paper";
 
-import { useNavigation } from "@react-navigation/native";
-
-export default function CardComponent({image, title, id}) {
+export default function CardComponent({ image, title, id }) {
 
     const navigation = useNavigation();
 
     function handleTouch() {
-        navigation.navigate("Movie", {id})
-
+        navigation.navigate("Movie", { id })
     }
 
     return (
@@ -18,11 +16,12 @@ export default function CardComponent({image, title, id}) {
                 <Card.Content>
                     <Image
                         style={styles.cardImage}
-                        source={{uri: image}}
+                        source={{ uri: image }}
                     />
                     <Text
                         variant={"titleLarge"}
                         style={styles.cardTitle}
+                        numberOfLines={2} // Limita o número de linhas e coloca "..."
                     >
                         {title}
                     </Text>
