@@ -4,6 +4,8 @@ import { Text, TextInput } from "react-native-paper";
 import { AuthContext } from "../context/AuthContext";
 import { fetchMovieDetails } from "../services/api";
 
+import { serverTimestamp } from "firebase/firestore";
+
 export default function MovieScreen({ route }) {
     const { user, fetchMovieReviews, sendMovieReview } = useContext(AuthContext);
     const { id } = route.params;
@@ -49,7 +51,7 @@ export default function MovieScreen({ route }) {
         let valid = true;
 
         const reviewRegex = /^[A-Za-z0-9][A-Za-z0-9\s\S]{9,}$/;  // Critica de pelo menos 10 caracteres e não começando com caracteres especiais
-        const ratingRegex = /^[1-9]$|^10$/;  // Nota de 1 a 10
+        const ratingRegex = /^[1-5]$/;  // Nota de 1 a 5
 
         if (!reviewRegex.test(reviewInput)) {
             setReviewError("A crítica deve ter pelo menos 10 caracteres e não pode começar com caracteres especiais.");
@@ -59,32 +61,33 @@ export default function MovieScreen({ route }) {
         }
 
         if (!ratingRegex.test(ratingInput)) {
-            setRatingError("A nota deve ser um número entre 1 e 10.");
+            setRatingError("A nota deve ser um número entre 1 e 5.");
             valid = false;
         } else {
             setRatingError("");
         }
 
+        console.log(reviews)
         return valid;
     }
 
     async function handleSubmit() {
         if (validateInputs()) {
             console.log("Crítica e nota válidas, enviando...");
-            await sendMovieReview(id, user, reviewInput, ratingInput);
+            await sendMovieReview(id, user, reviewInput, ratingInput, serverTimestamp());
 
             // Criar a nova crítica para adicionar ao estado sem recarregar
             const newReview = {
                 review: reviewInput,
                 rating: ratingInput,
                 username: user.username, // ou o nome correto do usuário
-                createdAt: new Date(), // data da crítica
+                createdAt: serverTimestamp(), // data da crítica
             };
 
             // Atualiza a lista de críticas com a nova
             setReviews(prevReviews => [...prevReviews, newReview]);
 
-            // Limpar os campos de entrada
+            // limpar os campos de entrada
             setReviewInput("");
             setRatingInput("");
         }
@@ -152,11 +155,7 @@ export default function MovieScreen({ route }) {
                                     <View>
                                         <Text variant="bodySmall">{review.username}</Text>
                                         <Text variant="bodySmall">
-                                            {new Date(review.createdAt).toLocaleDateString("pt-BR", {
-                                                year: "numeric",
-                                                month: "numeric",
-                                                day: "numeric",
-                                            })}
+                                            {review.createdAt?.seconds ? new Date(review.createdAt.seconds * 1000).toLocaleDateString("pt-BR") : "Data inválida"}
                                         </Text>
                                     </View>
                                     <Text variant="bodyLarge">{review.review}</Text>

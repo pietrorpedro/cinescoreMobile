@@ -1,17 +1,11 @@
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { addDoc, collection, doc, getDoc, getDocs, query, where } from "firebase/firestore"; // Importando as funções necessárias
+import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore"; // Importando as funções necessárias
 import React, { createContext, useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
 
 export const AuthContext = createContext();
 
-const saveUsernameInFirestore = async (uid, username) => {
-    try {
-        await setDoc(doc(db, "users", uid), { username }); // Usando db para acessar o Firestore
-    } catch (error) {
-        console.error("Erro ao salvar o username:", error);
-    }
-};
+
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -52,6 +46,14 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const saveUsernameInFirestore = async (uid, username) => {
+        try {
+            await setDoc(doc(db, "users", uid), { username });
+        } catch (error) {
+            console.error("Erro ao salvar o username:", error);
+        }
+    };
+
     const logOut = async () => {
         try {
             await signOut(auth);
@@ -78,14 +80,15 @@ export const AuthProvider = ({ children }) => {
     const fetchMovieReviews = async (movieId) => {
         try {
             const reviewsRef = collection(db, "reviews");  // Definindo a coleção "reviews"
-            const q = query(reviewsRef, where("movieId", "==", movieId)); // Filtro por movieId
+            const q = query(reviewsRef, where("movieId", "==", String(movieId))); // Filtro por movieId
             const querySnapshot = await getDocs(q); // Obtendo os documentos
     
             const reviews = [];
             querySnapshot.forEach((doc) => {
                 reviews.push(doc.data());
             });
-    
+            
+            console.log(typeof(movieId))
             return reviews;
         } catch (error) {
             console.error("Erro ao buscar as críticas:", error);
@@ -93,16 +96,16 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const sendMovieReview = async (movieId, user, review, rating) => {
+    const sendMovieReview = async (movieId, userId, review, rating, createdAt) => {
         try {
             const reviewRef = collection(db, "reviews");
             await addDoc(reviewRef, {
-                movieId: movieId,
-                userId: user.uid,
-                username: user.username,
+                movieId: String(movieId),
+                userId: userId.uid,
+                username: userId.username,
                 review: review,
-                rating: rating,
-                createdAt: new Date(),
+                rating: parseFloat(rating),
+                createdAt: createdAt,
             });
 
             console.log("Crítica enviada com sucesso");

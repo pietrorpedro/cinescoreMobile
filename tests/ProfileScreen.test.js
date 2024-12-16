@@ -1,70 +1,73 @@
-import { render, fireEvent, waitFor } from "@testing-library/react-native";
-import React from "react";
-import { AuthContext } from "../context/AuthContext";
-import { useNavigation } from "@react-navigation/native";
-import ProfileScreen from "../screens/ProfileScreen";
+import { fireEvent, render, screen } from '@testing-library/react';
+import React from 'react';
+import AuthScreen from "../screens/AuthScreen";
 
-jest.mock("@react-navigation/native", () => ({
+jest.mock('@react-navigation/native', () => ({
     useNavigation: jest.fn(),
 }));
 
-const mockLogOut = jest.fn();
-const mockNavigation = { navigate: jest.fn() };
+describe('AuthScreen', () => {
+    const mockAuthContext = {
+        signUp: jest.fn(),
+        signIn: jest.fn(),
+    };
 
-describe("ProfileScreen", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    it("should display 'Carregando...' when user is not logged in", () => {
-        const { getByText } = render(
-            <AuthContext.Provider value={{ user: null, logOut: mockLogOut }}>
-                <ProfileScreen />
-            </AuthContext.Provider>
-        );
-
-        expect(getByText("Carregando...")).toBeTruthy();
+    test('renders correctly in login mode', () => {
+        render(<AuthScreen />);
+        expect(screen.getByText('Entrar')).toBeInTheDocument();
+        expect(screen.getByLabelText('E-mail')).toBeInTheDocument();
+        expect(screen.getByLabelText('Senha')).toBeInTheDocument();
     });
 
-    it("should display username and logout button when user is logged in", () => {
-        const user = { username: "testuser" };
-        const { getByText } = render(
-            <AuthContext.Provider value={{ user, logOut: mockLogOut }}>
-                <ProfileScreen />
-            </AuthContext.Provider>
-        );
-
-        expect(getByText("Username: testuser")).toBeTruthy();
-
-        expect(getByText("Logout")).toBeTruthy();
+    test('renders correctly in signup mode', () => {
+        render(<AuthScreen setIsLogin={() => true} />);
+        expect(screen.getByText('Criar Conta')).toBeInTheDocument();
+        expect(screen.getByLabelText('Nome de Usuário')).toBeInTheDocument();
+        expect(screen.getByLabelText('Confirmar Senha')).toBeInTheDocument();
     });
 
-    it("should navigate to 'Auth' screen when user is not logged in", async () => {
-        useNavigation.mockReturnValue(mockNavigation);
+    test('validates username', () => {
+        render(<AuthScreen />);
 
-        render(
-            <AuthContext.Provider value={{ user: null, logOut: mockLogOut }}>
-                <ProfileScreen />
-            </AuthContext.Provider>
-        );
+        fireEvent.changeText(screen.getByLabelText('Nome de Usuário'), 'invalid_username');
 
-        await waitFor(() => expect(mockNavigation.navigate).toHaveBeenCalledWith("Auth"));
+        expect(screen.getByText('Username inválido')).toBeInTheDocument();
     });
 
-    it("should call logOut function and navigate to 'Auth' when logout button is pressed", async () => {
-        const user = { username: "testuser" };
-        useNavigation.mockReturnValue(mockNavigation);
+    test('validates email', () => {
+        render(<AuthScreen />);
 
-        const { getByText } = render(
-            <AuthContext.Provider value={{ user, logOut: mockLogOut }}>
-                <ProfileScreen />
-            </AuthContext.Provider>
-        );
+        fireEvent.changeText(screen.getByLabelText('E-mail'), 'invalid.email');
 
-        fireEvent.press(getByText("Logout"));
+        expect(screen.getByText('Email inválido')).toBeInTheDocument();
+    });
 
-        await waitFor(() => expect(mockLogOut).toHaveBeenCalledTimes(1));
+    test('validates password', () => {
+        render(<AuthScreen />);
 
-        await waitFor(() => expect(mockNavigation.navigate).toHaveBeenCalledWith("Auth"));
+        fireEvent.changeText(screen.getByLabelText('Senha'), 'short');
+
+        expect(screen.getByText('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número')).toBeInTheDocument();
+    });
+
+    test('validates password match', () => {
+        render(<AuthScreen />);
+
+        fireEvent.changeText(screen.getByLabelText('Senha'), 'password123');
+        fireEvent.changeText(screen.getByLabelText('Confirmar Senha'), 'different_password');
+
+        expect(screen.getByText('As senhas devem ser iguais')).toBeInTheDocument();
+    });
+
+    test('handles authentication', async () => {
+        const { getByText } = render(<AuthScreen />);
+
+        fireEvent.press(getByText('Entrar'));
+
+        await screen.findByText('Login bem-sucedido');
     });
 });

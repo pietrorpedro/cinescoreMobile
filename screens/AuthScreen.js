@@ -82,6 +82,7 @@ export default function AuthScreen() {
         if (validateInputs()) {
             setLoading(true);
             try {
+                console.log([email, password, username])
                 if (isLogin) {
                     await signIn(email, password);
                     alert("Login bem-sucedido");
@@ -90,7 +91,6 @@ export default function AuthScreen() {
                     alert("Conta criada e login bem-sucedido");
                 }
             } catch (error) {
-                // TODO: Remove this later
                 alert("Erro ao autenticar: " + error.message);
             } finally {
                 setLoading(false);

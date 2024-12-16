@@ -72,7 +72,7 @@ export default function MoviesScreen() {
     }
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.safeArea}>
             <ScrollView>
                 <Text variant="displayMedium">Buscar Filme</Text>
 
@@ -130,6 +130,9 @@ export default function MoviesScreen() {
 }
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+    },
     loading: {
         flex: 1,
         justifyContent: "center",
@@ -175,13 +178,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     cardsContainer: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
+        justifyContent: "center",
+        alignItems: "center",
     },
     card: {
-        width: "50%",
+        width: "100%",
         marginBottom: 10,
+        alignItems: "center",
     },
 });
-

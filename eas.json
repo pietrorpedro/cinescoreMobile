@@ -1,0 +1,32 @@
+{
+  "cli": {
+    "version": ">= 14.1.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "preview4": {
+      "distribution": "internal"
+    },
+    "production": {
+      "env": {
+        "API_AUTH": "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3NmYwN2Q5MGIwZGU2ZDNmNWFkOGQ3YzM2MjEzYjAwZSIsIm5iZiI6MTczMDkxMzIyOC4yMDU3NDk1LCJzdWIiOiI2NmE4MjYxYzQ4Nzg1ZDQ2MzRlMGExNzAiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.MjB3p3iQWjR4PjloUkdctHR7r5Mba__WgvXYlkbGoh0"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

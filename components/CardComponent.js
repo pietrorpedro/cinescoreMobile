@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Dimensions, Image, Pressable, StyleSheet } from "react-native";
+import { Image, Pressable, StyleSheet } from "react-native";
 import { Card, Text } from "react-native-paper";
 
 export default function CardComponent({ image, title, id }) {
@@ -33,7 +33,7 @@ export default function CardComponent({ image, title, id }) {
 
 const styles = StyleSheet.create({
     card: {
-        width: Dimensions.get("window").width / 2 - 15,
+        width: 300,
         height: 400,
         marginBottom: 16,
     },
